@@ -1,0 +1,116 @@
+# EDIT THIS FILE TO CUSTOMIZE THE HANDBOOK
+# See: https://github.ibm.com/oic/handbook-template/wiki/User-Guide for details
+
+# Inherit config from base
+INHERIT: ./base.yml
+
+# Project Information
+site_name: "Cobalt Iron Compass Demo"
+site_url: "https://pages.github.ibm.com/IBM-Cloud-Satellite-and-PaaS-Community/techzonedemos/cobaltiron-demo-oict/"
+site_description: "Show backup, recovery and DR using Compass"
+site_author: "Jagan Dusi"
+
+# Repository Information
+repo_name: 'IBM-Cloud-Satellite-and-PaaS-Community/techzonedemos/cobaltiron-demo-oict'
+repo_url: 'https://github.ibm.com/IBM-Cloud-Satellite-and-PaaS-Community/techzonedemos/cobaltiron-demo-oict'
+
+# Copyright
+copyright: <a href="/IBM-Cloud-Satellite-and-PaaS-Community/techzonedemos/cobaltiron-demo-oict/about/authors">IBM Open Innovation Community</a>.
+
+# Customize Handbook Template information visibility
+oic_handbook:
+  #template_display_info: false    # version information in the footer, defaults to true in base.yml
+  announce_text: >
+    The <b>Academy of Technology (AoT)</b> is transforming into <b>IBM Open Innovation Community</b>.
+    See <a href="https://w3.ibm.com/w3publisher/academy-assets/blog/d440d8f0-d2fa-11ed-9765-85f0355fd533"
+    target="_blank">blog post</a> and <a
+    href="https://pages.github.ibm.com/oic/open-innovation-handbook/" target="_blank">Handbook</a> for more details.
+  instana_key: 'SwqWI68BRyCMhG-g5zgsAA'
+
+# Provide some control over theme features.  Comment or un-comment as needed.
+theme:
+  language: en
+  features:
+    - announce.dismiss        # Button to dismiss the current temporary announcement
+    - content.action.edit
+    - content.action.feedback
+    # - content.action.view
+    - content.code.annotate   # Attach arbitrary content to specific sections of code blocks by adding numeric markers
+    - content.code.copy       # Button to allow the user to copy a code block's contents to the clipboard
+    # - content.tabs.link
+    # - navigation.expand     # Expand left sidebar by default
+    - navigation.indexes      # Attach documents to sections, useful for providing overview pages
+    - navigation.instant      # Single page instant refresh
+    # - navigation.sections   # Top level tabs rendered in sidebar
+    - navigation.tabs         # Navigation tabs across top. Comment this out to have navigation on the left
+    - navigation.tabs.sticky  # Tab always displayed
+    - navigation.top          # Back-to-top button. Rendered centered and just below the header
+    - navigation.tracking     # URL updated with active anchor
+    - search.share
+    - search.suggest
+    - toc.integrate           # Integrate page TOC in left sidebar - wider page
+  icon:
+    edit: 'material/pencil-outline'
+
+markdown_extensions:
+  pymdownx.magiclink:
+      provider: 'github'
+      repo_url_shortener: true
+      repo_url_shorthand: false
+      social_url_shorthand: true
+      user: dusij
+      repo: IBM-Cloud-Satellite-and-PaaS-Community/techzonedemos/cobaltiron-demo-oict
+  toc:
+      permalink: true
+      toc_depth: 3
+
+plugins:
+  # Built-in blog plugin - see https://squidfunk.github.io/mkdocs-material/setup/setting-up-a-blog/
+  blog:
+      blog_dir: "blog"
+      pagination_per_page: 5
+      post_date_format: full
+      post_url_date_format: yyyy/MM/dd
+  # Allow Tags on the pages - see https://squidfunk.github.io/mkdocs-material/setup/setting-up-tags/
+  tags:
+      tags_file: tags.md
+  # Configure the PDF export plugin - see https://github.com/zhaoterryy/mkdocs-pdf-export-plugin
+  with-pdf: # This creates a single PDF document for the whole site
+      author: Jagan Dusi
+      copyright: Copyright &copy; IBM Open Innovation Community
+      cover: true
+      back_cover: false
+      #
+      cover_title: Cobalt Iron Compass Demo
+      cover_subtitle: Show backup, recovery and DR using Compass
+      cover_logo: 'theme/logo-ibm-dark.png'
+      #custom_template_path: TEMPLATES PATH
+      #
+      toc_title: Contents
+      # heading_shift: false
+      toc_level: 2
+      #ordered_chapter_level: 2
+      #excludes_children:
+      #    - 'release-notes/:upgrading'
+      #    - 'release-notes/:changelog'
+      #
+      exclude_pages:
+          - '99.about/'
+          - 'blog'
+      #    - 'appendix/contribute/'
+      #convert_iframe:
+      #    - src: IFRAME SRC
+      #      img: POSTER IMAGE URL
+      #      text: ALTERNATE TEXT
+      #    - src: ...
+      #two_columns_level: 3
+      #
+      # render_js: true
+      #headless_chrome_path: headless-chromium
+      #
+      output_path: ./pdf/cobaltiron-demo-oict.pdf
+      enabled_if_env: ENABLE_PDF_EXPORT
+      #
+      debug_html: true
+      #show_anchors: true
+      verbose: false
