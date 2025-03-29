@@ -6,16 +6,16 @@ INHERIT: ./base.yml
 
 # Project Information
 site_name: "Cobalt Iron Compass Demo"
-site_url: "https://pages.github.ibm.com/IBM-Cloud-Satellite-and-PaaS-Community/techzonedemos/cobaltiron-demo-oict/"
+site_url: "https://pages.github.ibm.com/IBM-Cloud-Satellite-and-PaaS-Community/cobaltiron-demo-oict/"
 site_description: "Show backup, recovery and DR using Compass"
 site_author: "Jagan Dusi"
 
 # Repository Information
-repo_name: 'IBM-Cloud-Satellite-and-PaaS-Community/techzonedemos/cobaltiron-demo-oict'
-repo_url: 'https://github.ibm.com/IBM-Cloud-Satellite-and-PaaS-Community/techzonedemos/cobaltiron-demo-oict'
+repo_name: 'IBM-Cloud-Satellite-and-PaaS-Community/cobaltiron-demo-oict'
+repo_url: 'https://github.ibm.com/IBM-Cloud-Satellite-and-PaaS-Community/cobaltiron-demo-oict'
 
 # Copyright
-copyright: <a href="/IBM-Cloud-Satellite-and-PaaS-Community/techzonedemos/cobaltiron-demo-oict/about/authors">IBM Open Innovation Community</a>.
+copyright: <a href="/IBM-Cloud-Satellite-and-PaaS-Community/cobaltiron-demo-oict/about/authors">IBM Open Innovation Community</a>.
 
 # Customize Handbook Template information visibility
 oic_handbook:
