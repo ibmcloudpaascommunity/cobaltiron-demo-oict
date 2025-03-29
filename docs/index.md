@@ -185,7 +185,7 @@ Refer to instructions [**here**](https://help.cobaltiron.com/wp-content/uploads/
 ![pro-step4.2](images/pro-step4.2.png)
 
 7. We need to create a system in Commander. On the Commander Systems tab, click + to create a system.
-![pro-step4.3](images/pro-step4.3.png)
+![pro-step4.3](images/pro-step4.)
 
 8. Click on Continue, and the system is created as well as the Protection Client for filesystem backups. The server is now enrolled for backups.
 
