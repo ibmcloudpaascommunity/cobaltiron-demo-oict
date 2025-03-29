@@ -23,7 +23,7 @@ owner: Jagan Dusi
 
 ### Use case
 
-Backup data for Power workloads across the Hybrid cloud, to accelerate migration to clooud and maintain business continuity.
+Backup data for Power workloads across the Hybrid cloud, to accelerate migration to cloud and maintain business continuity.
 
 
 ### Customer scenario
