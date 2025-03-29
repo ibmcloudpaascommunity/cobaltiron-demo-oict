@@ -23,7 +23,7 @@ owner: Jagan Dusi
 
 ### Use case
 
-Expand on existing AI/ML to build Gen AI applications and manage lifecycle of AI models in dev, test and production consistently.
+Backup data for Power workloads across the Hybrid cloud, to accelerate migration to clooud and maintain business continuity.
 
 
 ### Customer scenario
