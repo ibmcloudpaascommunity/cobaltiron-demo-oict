@@ -535,9 +535,7 @@ Or optionally set up some sample workloads, for example, deploy MySQL server. Yo
 
 ### Learning resources
 
-[Cloud docs for Red Hat OpenShift AI](https://cloud.ibm.com/docs/openshift?topic=openshift-ai-addon-about&interface=ui)
 
-[Red Hat Documentation for OpenShift AI](https://docs.redhat.com/en/documentation/red_hat_openshift_ai/2025)
 
 ### Contacts
 
@@ -567,8 +565,4 @@ Japan Leader – Hiroshi Kohno (HKOHNO@jp.ibm.com)
 
 **Product Management:**
 
-Darrel Schrag (drschrag@us.ibm.com), Product Manager, ROKS/IKS
 
-Su Agrawal (agrawals@de.ibm.com), Product Manager, Cloud Containers
-
-Dave Tropeano (davetropeano@us.ibm.com), Program Director, Containers + AI + Distributed Cloud
