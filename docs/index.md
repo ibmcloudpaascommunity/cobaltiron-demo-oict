@@ -89,7 +89,7 @@ For the purpose of this demo, I have pre-provisioned all cloud services and Comp
 
 NOTE: Please refer to ***APPENDIX*** for detailed steps to build the demo environment.
 
-#### **Leverage PowerVS Deployable Architecture**
+**Leverage PowerVS Deployable Architecture**
 
 IBM Cloud deployable architecture is cloud automation for deploying a common architectural pattern that combines one or more cloud resources. It offers a modular, flexible foundation for businesses to build, deploy, and manage applications securely in the cloud. IBM Cloud offers a few different variations of deployable architectures that provide an automated deployment method to create an isolated Power Virtual Server workspace and connect it with IBM Cloud services and public internet.
 
@@ -141,7 +141,7 @@ In this demo, we will create a simple quick start environment for quick testing.
 
 ![step9](images/step9.png)
 
-#### **PowerVS workload setup**
+**PowerVS workload setup**
 
 1. Now that I have my PowerVS instance provisioned on IBM Cloud, I can start deploying my workloads such as Databases as needed
 2. For the purpose of this demo, I will deploy MySQL server. One can install MySQL on RHEL 9.x by following instructions on [this Red Hat documentation page](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/configuring_and_using_database_servers/assembly_using-mysql_configuring-and-using-database-servers#installing-mysql_assembly_using-mysql). [This MySQL documentation page](https://dev.mysql.com/doc/employee/en/employees-installation.html) has instructions on how to load a sample database.
@@ -157,7 +157,7 @@ mysqldump -p <database_name > <backup_file.sql>
 
 4. Now I have the PowerVS instance and some sample data ready, I can start the backup.
 
-#### **Compass backup operations**
+**Compass backup operations**
 
 Cobalt Iron Compass supports all of the systems and applications that IBM Storage Protect does plus many additional ones.  Compass allows consistent management of diverse workloads across on-premises and various cloud platforms through a consolidated management experience.  Compass platform support includes:
 
@@ -173,7 +173,7 @@ Cobalt Iron Compass supports all of the systems and applications that IBM Storag
 
 In this demo, let’s set up backup for Linux on PowerVS in this demo.
 
-#### **Provision Cobalt Iron Compass service**
+**Provision Cobalt Iron Compass service**
 
 1. Though I have already provisioned, let me show you how you can provision Cobalt Iron Compass service in your Cloud account.
 
@@ -223,7 +223,7 @@ Note that the “Enable agent installations” option for this protection client
 ![pro-step11](images/pro-step11.png)
 
 
-#### **Set up Cobalt Iron Compass agent on PowerVS instance**
+**Set up Cobalt Iron Compass agent on PowerVS instance**
 
 1. Copy the file to the PowerVS Linux instance.
 ```
@@ -263,7 +263,7 @@ Perform agent install:
 ![pro-step13](images/pro-step13.png)
 
 
-#### **Backup validation**
+**Backup validation**
 
 1.	On Compass Commander dashboard, under Systems tab, click on the system name, and you should be able to see the Protection Client Events.
 ![validate-step1](images/validate-step1.png)
@@ -271,7 +271,7 @@ Perform agent install:
 2. You can also click on EVENTS tab, and inspect the SUMMARY and DETAILS tabs.
 ![validate-step2](images/validate-step2.png)
 
-#### **Restore PowerVS environment**
+**Restore PowerVS environment**
 
 Secure backup is essential not only for business continuity but also for supporting an effective cloud strategy. By creating secure, encrypted backups, businesses can safely migrate workloads, test cloud environments, and ensure data redundancy across hybrid and multi-cloud setups. Secure backups provide a reliable foundation for scaling operations to the cloud, as they allow data to be restored or replicated in different cloud regions or providers, ensuring resilience and flexibility. This approach not only safeguards against data loss but also facilitates cloud adoption, enabling seamless data mobility, regulatory compliance, and risk management as companies expand their cloud infrastructure.
 
@@ -370,7 +370,7 @@ Prerequisites to Secure backup from on-premises to IBM cloud:
 * Enterprise network can be connected to IBM Cloud via Direct Link or VPN.
 * IBM Cloud services can be used to manage logging, monitoring, and security of the cloud infrastructure.
 
-#### **Provision PowerVS environment with PowerVS DA**
+**Provision PowerVS environment with PowerVS DA**
 
 Here is the reference architecture for Figure: Secure BaaS with Compass for on-premises to IBM Cloud.
 ![reference-aarchitecture](images/ref-arch.png)
@@ -430,7 +430,7 @@ Use PowerVS Quickstart deployable architecture (DA) to create a new architecture
 
 ![doit-step3.5](images/doit-step3.5.png)
 
-#### **PowerVS Quickstart post setup**
+**PowerVS Quickstart post setup**
 
 1. Once the environment is created, go to the Outputs tab of the configuration, and you can find IPs needed to make the connection to the environment.
 ![post-setup1](images/post-setup1.png)
@@ -496,7 +496,7 @@ nameserver dns_host_or_ip
 
 ![post-setup8](images/post-setup8.png)
 
-#### **Deploy workloads on PowerVS instance**
+**Deploy workloads on PowerVS instance**
 
 1. Now we have PowerVS environment set up, we can deploy some contents on the PowerVS instance.
 
