@@ -13,11 +13,16 @@ owner: Jagan Dusi
 # Backup PowerVS workloads using Backup-as-a-Service With Cobalt Iron Compass - Demo Script
 
 
+<p align="center">
+  <img src="images/compass-process.png" />
+</p>
+
+
 ***Notes to sellers and tech sellers:***
 
 1. This narrative uses an example customer scenario.
 2. This demo script assumes that you are presenting to the customer based on your previous conversation and recapping issues and concerns shared by the customer
-3. Feel free to tailor the demo script based on the customer AI adoption maturity and identify relevant demo to show such as Red Hat OpenShift AI, RHEL AI or Watsonx services from [AI on Cloud demos in Techzone](https://techzone.ibm.com/collection/IBMCloudTechDemos/journey-ai-on-ibm-cloud). If you dont find what you need please reach out to the [contacts](https://pages.github.ibm.com/IBM-Cloud-Satellite-and-PaaS-Community/rhoai-demo-oict/#contacts) in the demo script.
+3. Feel free to tailor the demo script based on the customer's use case and scenario. If you need help please reach out to the [contacts](https://pages.github.ibm.com/IBM-Cloud-Satellite-and-PaaS-Community/cobaltiron-demo-oict/#contacts) in the demo script.
 
 ### Use case
 
@@ -78,17 +83,16 @@ Today I am going to show you on how to achieve ***outcome #1***
 
 Here are steps I follow in the demo today and happy dive deep into any area you like to spend time on:
 
-* Leverage IBM Cloud Deployable Architectures to speed provisioning of PowerVS instances, networking and other cloud service needed to support the migration
-* Set up sample workloads on PowerVS, I will use MySQL database as an example in this demo. Backup MySQL database to files in file system
-* Provision Cobalt Iron Compass Backup-as-a-Service on IBM Cloud
-* Install and configure Cobalt Iron Compass agent on the Power Virtual Server instance
-* Perform backup of critical MySQL database backup files to show an example
-* Provision PowerVS instance for restore, and set up Compass agent
-* Restore choice of files from the Compass backup vault, and restore MySQL database from the files
+1. Leverage IBM Cloud Deployable Architectures to speed provisioning of PowerVS instances, networking and other cloud service needed to support the migration
+2. Set up sample workloads on PowerVS, I will use MySQL database as an example in this demo. Backup MySQL database to files in file system
+3. Provision Cobalt Iron Compass Backup-as-a-Service on IBM Cloud
+4. Install and configure Cobalt Iron Compass agent on the Power Virtual Server instance
+5. Perform backup of critical MySQL database backup files to show an example
+6. Provision PowerVS instance for restore, and set up Compass agent
+7. Restore choice of files from the Compass backup vault, and restore MySQL database from the files
 
 For the purpose of this demo, I have pre-provisioned all cloud services and Compass to build the demo environment and I am going to show you what I pre-provisioned before I dive into how I backup and restore PowerVS using Cobalt Iron Compass.
 
-NOTE: Please refer to ***APPENDIX*** for detailed steps to build the demo environment.
 
 **Leverage PowerVS Deployable Architecture**
 
@@ -101,7 +105,7 @@ In this demo, we will create a simple quick start environment for quick testing.
 
 2. Search for ‘Power Virtual Server with VPC landing zone’ in the Catalog.
 
-  ![step2](images/step2.png)
+    ![step2](images/step2.png)
 
 3. PowerVS deployable architecture offers two variations Standard and QuickStart. Standard allows you to create the workspace and all relevant Networking that enables you to create as many PowerVS instances needed and also extend the architecture in future. QuickStart variations deploys the architecture and also provisions one PowerVS instance for you to experience end to end provisioning  flow.
 
@@ -109,55 +113,55 @@ In this demo, we will create a simple quick start environment for quick testing.
 
 5. As you can see from the deployable architecture diagram, it creates Edge VPC and PowerVS workspace. In Edge VPC, it creates Bastion host (jump server) in management security group, and proxy server in network service security group. It also creates a PowerVS instance in the PowerVS workspace. Other necessary components to connect PowerVS workspace with IBM Cloud resources and secure the environment are also created, for example, Transit Gateway, VPN, VPE, etc.
 
-  ![step5](images/da-arch.png)
+    ![step5](images/da-arch.png)
 
 6. Click on Add to project button.
 
-  ![step6](images/step6.png)
+    ![step6](images/step6.png)
 
 7. Add to an existing project.
 
-  ![step7](images/step7.png)
+    ![step7](images/step7.png)
 
 8. You will see Security, Required, and Optional tabs, you can click on the tabs and explain them.
 
 9. Let’s create a Linux virtual server with RHEL 9.2 image. We can choose custom image for ‘tshirt_size’ on Required tab, and choose ‘Linux -RHEL9-SP2’ for ‘custom_profile_instance_boot_image’ on Optional tab. For ‘custom_profile’ field, here is the sample input for a small virtual server, you can adjust the input based on your requirements.
 
-  ```
-  {
-    "sap_profile_id": null,
-    "cores": "1",
-    "memory": "2",
-    "server_type": "s922",
-    "proc_type": "shared",
-    "storage": {
-      "size": "",
-      "tier": ""
+    ```
+    {
+      "sap_profile_id": null,
+      "cores": "1",
+      "memory": "2",
+      "server_type": "s922",
+      "proc_type": "shared",
+      "storage": {
+        "size": "",
+        "tier": ""
+      }
     }
-  }
-  ```
+    ```
 
-  ![step8](images/step8.png)
+    ![step8](images/step8.png)
 
 10. Save and validate the configuration. Approve and deploy. The environment will be deployed automatically.
 
-  ![step9](images/step9.png)
+    ![step9](images/step9.png)
 
 **PowerVS workload setup**
 
 1. Now that I have my PowerVS instance provisioned on IBM Cloud, I can start deploying my workloads such as Databases as needed
-2. For the purpose of this demo, I will deploy MySQL server. One can install MySQL on RHEL 9.x by following instructions on [this Red Hat documentation page](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/configuring_and_using_database_servers/assembly_using-mysql_configuring-and-using-database-servers#installing-mysql_assembly_using-mysql). [This MySQL documentation page](https://dev.mysql.com/doc/employee/en/employees-installation.html) has instructions on how to load a sample database.
+2. For the purpose of this demo, I will deploy MySQL server. One can install MySQL on RHEL 9.x by following instructions on this [Red Hat documentation page](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/configuring_and_using_database_servers/assembly_using-mysql_configuring-and-using-database-servers#installing-mysql_assembly_using-mysql). This [MySQL documentation page](https://dev.mysql.com/doc/employee/en/employees-installation.html) has instructions on how to load a sample database.
 3. I will demonstrate how to dump MySQL Database and backup important files using Cobalt Iron Compass and also restore.
 
-  For some databases, for example, Oracle, Compass integrates with the database via RMAN and you need to install another agent on the virtual server. For MySQL, user could backup the database into a file locally via command:
+    For some databases, for example, Oracle, Compass integrates with the database via RMAN and you need to install another agent on the virtual server. For MySQL, user could backup the database into a file locally via command:
 
-  ```
-  mysqldump -p <database_name > <backup_file.sql>
-  ```
+    ```
+    mysqldump -p <database_name > <backup_file.sql>
+    ```
 
-  ![worklaod1](images/workload1.png)
+    ![worklaod1](images/workload1.png)
 
-Now I have the PowerVS instance and some sample data ready, I can start the backup.
+    Now I have the PowerVS instance and some sample data ready, I can start the backup.
 
 **Compass backup operations**
 
