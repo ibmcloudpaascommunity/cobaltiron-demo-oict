@@ -528,6 +528,7 @@ Prerequisites to Secure backup from on-premises to IBM cloud:
 5. Backup data is vaulted in multiple, isolated security zones.
 
 **A few things to note:**
+
 * BaaS VPC: When the Compass BaaS service is created from the IBM Cloud Catalog, a backup Virtual Private Cloud (VPC) and Virtual Private Endpoints (VPEs) are created automatically by Compass to securely connect corporate cloud networking to the Compass Vaults in IBM Cloud. Refer to [Backup for AIX and Linux instances for more details.](https://cloud.ibm.com/docs/power-iaas?topic=power-iaas-backup-strategies#baas)
 * Secure backup service replicates data to a replication-paired Compass Vault in another cloud region. Supported data center pairs can be found in [this cloud doc page.](https://cloud.ibm.com/docs/power-iaas?topic=power-iaas-backup-strategies#baas)
 * Enterprise network can be connected to IBM Cloud via Direct Link or VPN.
@@ -538,7 +539,7 @@ Prerequisites to Secure backup from on-premises to IBM cloud:
 Here is the reference architecture for Figure: Secure BaaS with Compass for on-premises to IBM Cloud.
 ![reference-aarchitecture](images/ref-arch.png)
 
-For backup and restore, please refer to the steps in [Demo Steps](https://pages.github.ibm.com/IBM-Cloud-Satellite-and-PaaS-Community/cobaltiron-demo-oict/#demo-steps).
+For backup and restore, please refer to all the steps in [Demo Steps](https://pages.github.ibm.com/IBM-Cloud-Satellite-and-PaaS-Community/cobaltiron-demo-oict/#demo-steps).
 
 
 
