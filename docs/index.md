@@ -171,7 +171,8 @@ In this demo, we will create a simple quick start environment for quick testing.
 
     ![post-setup2](images/post-setup2.png)
 
-  The following command should allow you to ssh to jump server from your local machine.
+    The following command should allow you to ssh to jump server from your local machine.
+
     ```
     ssh pvs_compass_jumpserver
     ```
@@ -179,6 +180,7 @@ In this demo, we will create a simple quick start environment for quick testing.
     ![post-setup3](images/post-setup3.png)
 
 4. To ssh to the PowerVS instance via the jump server from your local machine, use ssh with ‘-J’ option. Refer to [ssh manual page](https://man.openbsd.org/ssh#J) for more details.
+
     ```
     PVS_SERVER_IP= powervs_instance_management_ip
     ssh -i PRIVATE_KEY_FILE -J root@pvs_compass_jumpserver root@$PVS_SERVER_IP
@@ -326,6 +328,7 @@ Refer to instructions [**here**](https://help.cobaltiron.com/wp-content/uploads/
     ![pro-step4.2](images/pro-step4.2.png)
 
 3. **[pre-provisioned]** We need to create a system in Commander. On the Commander Systems tab, click + to create a system.
+
     ![pro-step4.3](images/pro-step4.3.png)
 
 4. **[pre-provisioned]** Fill in the information and click on Continue, and the system is created as well as the Protection Client for filesystem backups. The server is now enrolled for backups.
@@ -393,7 +396,7 @@ Refer to instructions [**here**](https://help.cobaltiron.com/wp-content/uploads/
 
     ![pro-step12](images/pro-step12.png)
 
-13. Do incremental back of my directory
+5. Do incremental back of my directory
 
     ![pro-step13](images/pro-step13.png)
 
@@ -442,6 +445,7 @@ As highlighted in the following figure, the backup images can be used to restore
     dnf install mysql-server
     systemctl start mysqld.service
     ```
+
 5. **[pre-provisioned]** The restore system will pick up the backup for the original system, we need to establish proxy relationship. For the restore system, we need to add the original system as the related client.
 
     * **[pre-provisioned]** Go to Compass Commander, under SYSTEMS, find the system for the **restore** system, and click on its client name.
@@ -460,6 +464,7 @@ As highlighted in the following figure, the backup images can be used to restore
     * **[pre-provisioned]** Click on the **original** system to backup from, and click the green ok button.
 
       ![restore-step4](images/restore-proxy-client-add.png)
+
 
 6. Now let’s restore the data in my user directory /root/yytest. If the hostname of the recover server is different from before, you need to tell it to pick up the backup data from the previous system.
 
