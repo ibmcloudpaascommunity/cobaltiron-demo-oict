@@ -201,7 +201,7 @@ In this demo, we will create a simple quick start environment for quick testing.
 
     ![post-setup5](images/post-setup5.png)
 
-    You can run ‘souce .bashrc’ to load the new settings, and now the PowerVS instance should have internet access. You can try to connect to external site.
+    You can run ‘source .bashrc’ to load the new settings, and now the PowerVS instance should have internet access. You can try to connect to external site.
     ```
     curl google.com
     ```
@@ -295,8 +295,7 @@ Cobalt Iron Compass supports all of the systems and applications that IBM Storag
 -	IBM Storage Scale/GPFS
 -	Virtualization platforms:  VMware, Hyper-V
 -	NAS:  NetApp, Isilon, Windows File Servers, most NAS devices
--	Containers:  OpenShift, Kubernetes (via technology plug-in)
--	Cloud applications:  MS365 (via technology plug-in), AWS services, Azure SQL and other Azure services, Google services, etc.
+-	Cloud applications
 
 In this demo, let’s set up backup for Linux on PowerVS in this demo.
 
@@ -319,7 +318,7 @@ Although I have already provisioned, let me show you how you can provision Cobal
 
 Refer to instructions [**here**](https://help.cobaltiron.com/wp-content/uploads/2024/01/CobaltIron-PowerVS-AgentSetup-Linux-20240326.pdf) for how to set up backup for Linux on PowerVS.
 
-1. Login to IBM Cloud, in Resource list, filter by compass under Product.
+1. Login to IBM Cloud, in Resource list, filter by compass under Product, and you will see your Cobalt Iron instance under Storage section.
 
     ![pro-step4.1](images/pro-step4.1.png)
 
@@ -331,7 +330,7 @@ Refer to instructions [**here**](https://help.cobaltiron.com/wp-content/uploads/
 
     ![pro-step4.3](images/pro-step4.3.png)
 
-4. **[pre-provisioned]** Fill in the information and click on Continue, and the system is created as well as the Protection Client for filesystem backups. The server is now enrolled for backups.
+4. **[pre-provisioned]** Type in hostname, select system platform type, select a protection class policy, and click on Continue. The system is created as well as the Protection Client for filesystem backups. The server is now enrolled for backups.
 
 5. Click on the system name
 
