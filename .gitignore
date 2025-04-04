@@ -3,6 +3,10 @@ my*
 tmp*
 ~*
 
+.DS_Store
+site*
+site/*
+
 # vscode files
 .vscode
 
