@@ -91,7 +91,7 @@ Here are steps I follow in the demo today and happy dive deep into any area you 
 6. Provision PowerVS instance for restore, and set up Compass agent
 7. Restore choice of files from the Compass backup vault, and restore MySQL database from the files
 
-For the purpose of this demo, I have pre-provisioned all cloud services and Compass to build the demo environment and I am going to show you what I pre-provisioned before I dive into how I backup and restore PowerVS using Cobalt Iron Compass.
+For the purpose of this demo, I have pre-provisioned all cloud services and Compass to build the demo environment. Even though I performed all the steps at pre-provisioned phase, some steps can be run again for demo purpose without harm. **The steps that should ONLY be run at pre-provisioned phase are tagged with [pre-provisioned] at the beginning**. The steps that are not tagged can be run at both pre-provisioned phase and demo phase.
 
 
 **Leverage PowerVS Deployable Architecture**
@@ -107,9 +107,11 @@ In this demo, we will create a simple quick start environment for quick testing.
 
     ![step2](images/step2.png)
 
-3. PowerVS deployable architecture offers two variations Standard and QuickStart. Standard allows you to create the workspace and all relevant Networking that enables you to create as many PowerVS instances needed and also extend the architecture in future. QuickStart variations deploys the architecture and also provisions one PowerVS instance for you to experience end to end provisioning  flow.
+3. PowerVS deployable architecture offers different variations. Standard allows you to create the workspace and all relevant Networking that enables you to create as many PowerVS instances needed and also extend the architecture in future. QuickStart variations deploys the architecture and also provisions one PowerVS instance for you to experience end to end provisioning  flow.
 
 4. Use PowerVS [Quickstart deployable architecture (DA)](https://cloud.ibm.com/docs/powervs-vpc?topic=powervs-vpc-deploy-arch-ibm-pvs-inf-standard-plus-vsi) to create a new architecture. You can set up PowerVS instance with AIX, IBM i, Linux, or SAP. In this demo, we will set up a new architecture with RHEL 9.2 on PowerVS instance.
+
+    ![step2](images/step2b.png)
 
 5. As you can see from the deployable architecture diagram, it creates Edge VPC and PowerVS workspace. In Edge VPC, it creates Bastion host (jump server) in management security group, and proxy server in network service security group. It also creates a PowerVS instance in the PowerVS workspace. Other necessary components to connect PowerVS workspace with IBM Cloud resources and secure the environment are also created, for example, Transit Gateway, VPN, VPE, etc.
 
@@ -143,25 +145,142 @@ In this demo, we will create a simple quick start environment for quick testing.
 
     ![step8](images/step8.png)
 
-10. Save and validate the configuration. Approve and deploy. The environment will be deployed automatically.
+10. **[pre-provisioned]** Save and validate the configuration. Approve and deploy. The environment will be deployed automatically.
 
     ![step9](images/step9.png)
 
-**PowerVS workload setup**
 
-1. Now that I have my PowerVS instance provisioned on IBM Cloud, I can start deploying my workloads such as Databases as needed
-2. For the purpose of this demo, I will deploy MySQL server. One can install MySQL on RHEL 9.x by following instructions on this [Red Hat documentation page](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/configuring_and_using_database_servers/assembly_using-mysql_configuring-and-using-database-servers#installing-mysql_assembly_using-mysql). This [MySQL documentation page](https://dev.mysql.com/doc/employee/en/employees-installation.html) has instructions on how to load a sample database.
-3. I will demonstrate how to dump MySQL Database and backup important files using Cobalt Iron Compass and also restore.
+**PowerVS Quickstart post setup**
 
-    For some databases, for example, Oracle, Compass integrates with the database via RMAN and you need to install another agent on the virtual server. For MySQL, user could backup the database into a file locally via command:
+1. Once the environment is created, go to project configuration, take a look at the Outputs tab of the configuration, and you can find IPs needed to make the connection to the environment.
+
+    ![post-setup1](images/post-setup1.png)
+
+2. Note down the following information:
+    * access_host_or_ip – The floating IP of the jump server that you can access remotely.
+    * powervs_instance_management_ip – The private IP of the PowerVS instance that you can access from jump server.
+    * proxy_host_or_ip_port – Proxy server.
+
+3. To access the jump server, I added the following in ~/.ssh/config on my local Mac.
+    ```
+    Host pvs_compass_jumpserver
+        HostName access_host_or_ip
+        user root
+        IdentityFile ~/path_to_my_private_key
+    ```
+
+    ![post-setup2](images/post-setup2.png)
+
+  The following command should allow you to ssh to jump server from your local machine.
+    ```
+    ssh pvs_compass_jumpserver
+    ```
+
+    ![post-setup3](images/post-setup3.png)
+
+4. To ssh to the PowerVS instance via the jump server from your local machine, use ssh with ‘-J’ option. Refer to [ssh manual page](https://man.openbsd.org/ssh#J) for more details.
+    ```
+    PVS_SERVER_IP= powervs_instance_management_ip
+    ssh -i PRIVATE_KEY_FILE -J root@pvs_compass_jumpserver root@$PVS_SERVER_IP
+    ```
+
+    ![post-setup4](images/post-setup4.png)
+
+5. **[pre-provisioned]** Login to the PowerVS instance, and follow the [Quickstart next steps](https://cloud.ibm.com/docs/powervs-vpc?topic=powervs-vpc-solution-quickstart-next-steps) to allow the PowerVS instance to access internet.
+
+    Configure the proxy to reach the internet. You can add the proxy settings in ~/.bashrc. As mentioned in the documentation, find the <proxy_host_or_ip_port> value in the output section of the deployment, and add the following entries at the end of /.bashrc file.
+    ```
+    export http_proxy=http://<proxy_host_or_ip_port>:3128
+    export https_proxy=http://<proxy_host_or_ip_port>:3128
+    export HTTP_PROXY=http://<proxy_host_or_ip_port>:3128
+    export HTTPS_PROXY=http://<proxy_host_or_ip_port>:3128
+    export no_proxy=161.0.0.0/0,10.0.0.0/8
+    ```
+
+    ![post-setup5](images/post-setup5.png)
+
+    You can run ‘souce .bashrc’ to load the new settings, and now the PowerVS instance should have internet access. You can try to connect to external site.
+    ```
+    curl google.com
+    ```
+
+    ![post-setup6](images/post-setup6.png)
+
+6. **[pre-provisioned]** Mount file storage from VPC on PowerVS instance. For Linux, run the following commands.
+    ```
+    mkdir /nfs
+    mount <nfs_host_or_ip_path> /nfs
+    ```
+
+    ![post-setup7](images/post-setup7.png)
+
+7. **[pre-provisioned]** Config DNS on PowerVS instance
+    Add the dns_host_or_ip_path value at the top in the /etc/resolv.conf file
+    ```
+    nameserver dns_host_or_ip
+    ```
+
+    ![post-setup8](images/post-setup8.png)
+
+
+**Deploy workloads on PowerVS instance**
+
+1. **[pre-provisioned]**Now we have PowerVS environment set up, we can deploy some sample contents on the PowerVS instance.
+
+    You can create a sample test file
 
     ```
-    mysqldump -p <database_name > <backup_file.sql>
+    echo "IBM Power Virtual Server is a family of configurable, multi-tenant, virtual IBM Power servers with access to IBM Cloud services." > mytest.txt
     ```
 
-    ![worklaod1](images/workload1.png)
+2. **[pre-provisioned]** Optionally you can set up some sample workloads, for example, deploy MySQL server. You can install MySQL on RHEL 9.x by following instructions on this [Red Hat documentation page.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/configuring_and_using_database_servers/ssembly_using-mysql_configuring-and-using-database-servers#installing-mysql_assembly_using-mysql)
 
-    Now I have the PowerVS instance and some sample data ready, I can start the backup.
+    ![put-content1](images/put-content1.png)
+
+3. **[pre-provisioned]** You can also set up a sample database by following instruction on [MySQL documentation page](https://dev.mysql.com/doc/employee/en/employees-installation.html).
+
+    - Download the zip file for the test_db on local machine
+
+    - Securely copy the file to the PowerVS instance
+
+      ```
+      scp -i $MY_PRIVATE_KEY -J root@pvs_compass_jumpserver ~/Downloads/test_db-master.zip root@$PVS_SERVER_IP:/root/test_db-master.zip
+      ```
+
+    - Login to PowerVS instance and install unzip.
+
+      ```
+      dnf install unzip
+      ```
+
+      ![put-content2](images/put-content2.png)
+
+    - Install the sample DB
+
+      ```
+        unzip test_db-master.zip
+        cd test_db-master
+        mysql -t < employees.sql
+      ```
+
+    - Validate the database by following instructions [here](https://dev.mysql.com/doc/employee/en/employees-validation.html)
+
+      ```
+        time mysql -t < test_employees_sha.sql
+      ```
+
+      ![put-content3](images/put-content3.png)
+
+4. You can also run a few SQL statements to query the database.
+
+    ![put-content4](images/put-content4.png)
+
+ 5. For some databases, for example, Oracle, Compass integrates with the database via RMAN and you need to install another agent on the virtual server. For MySQL, user could backup the database into a file locally using `mysqldump -p <database_name > <backup_file.sql>`.
+
+    ![put-content4](images/put-content5.png)
+
+ Now we have the PowerVS instance and some sample data ready, we can start the backup.
+
 
 **Compass backup operations**
 
@@ -181,97 +300,102 @@ In this demo, let’s set up backup for Linux on PowerVS in this demo.
 
 **Provision Cobalt Iron Compass service**
 
-1. Though I have already provisioned, let me show you how you can provision Cobalt Iron Compass service in your Cloud account.
+Although I have already provisioned, let me show you how you can provision Cobalt Iron Compass service in your Cloud account.
 
-2. Login to IBM Cloud, and search Cobalt Iron in the catalog.
+1. Login to IBM Cloud, and search Cobalt Iron in the catalog.
 
-  ![pro-step1](images/pro-step1.png)
+    ![pro-step1](images/pro-step1.png)
 
-3. Fill in the information and provision the service.
+2. Fill in the information and provision the service.
 
-  ![pro-step3](images/pro-step3.png)
+    ![pro-step3](images/pro-step3.png)
 
-  ![pro-step3](images/pro-step3b.png)
+    ![pro-step3](images/pro-step3b.png)
 
 
-4. Creating a System in Compass Commander
+**Creating a System in Compass Commander**
 
-  Refer to instructions [**here**](https://help.cobaltiron.com/wp-content/uploads/2024/01/CobaltIron-PowerVS-AgentSetup-Linux-20240326.pdf) for how to set up backup for Linux on PowerVS.
+Refer to instructions [**here**](https://help.cobaltiron.com/wp-content/uploads/2024/01/CobaltIron-PowerVS-AgentSetup-Linux-20240326.pdf) for how to set up backup for Linux on PowerVS.
 
-5. Login to IBM Cloud, in Resource list, filter by compass under Product.
-  ![pro-step4.1](images/pro-step4.1.png)
+1. Login to IBM Cloud, in Resource list, filter by compass under Product.
 
-6. Click on the Compass instance, and ‘Launch Commander’.
-  ![pro-step4.2](images/pro-step4.2.png)
+    ![pro-step4.1](images/pro-step4.1.png)
 
-7. We need to create a system in Commander. On the Commander Systems tab, click + to create a system.
-  ![pro-step4.3](images/pro-step4.3.png)
+2. Click on the Compass instance, and ‘Launch Commander’.
 
-8. Fill in the information and click on Continue, and the system is created as well as the Protection Client for filesystem backups. The server is now enrolled for backups.
+    ![pro-step4.2](images/pro-step4.2.png)
 
-5. Click on the system name:
-  ![pro-step4.5](images/pro-step4.5.png)
+3. **[pre-provisioned]** We need to create a system in Commander. On the Commander Systems tab, click + to create a system.
+    ![pro-step4.3](images/pro-step4.3.png)
+
+4. **[pre-provisioned]** Fill in the information and click on Continue, and the system is created as well as the Protection Client for filesystem backups. The server is now enrolled for backups.
+
+5. Click on the system name
+
+    ![pro-step4.5](images/pro-step4.5.png)
 
 6. And click on the client name under Protection Clients.
-  ![pro-step4.6](images/pro-step4.6.png)
 
-7. Find client identifier on the details tab.
-  ![pro-step4.7](images/pro-step4.7.png)
+    ![pro-step4.6](images/pro-step4.6.png)
 
-  Note that the “Enable agent installations” option for this protection client in Commander should be enabled by default, if not, enable it.
+7. Find client identifier on the details tab
+
+    ![pro-step4.7](images/pro-step4.7.png)
+
+    Note that the “Enable agent installations” option for this protection client in Commander should be enabled by default, if not, enable it.
 
 8. Find your client identifier and record it.
-  - Client name: pi-qs FIL Client 00
-  - Client identifier: cid01744-pi-qs-fil-00
+    - Client name: pi-qs FIL Client 00
+    - Client identifier: cid01744-pi-qs-fil-00
 
-9. Download the installer. On the details tab, you can also find ‘DOWNLOAD INSTALLER’ button, and download the installer for RHEL for Power.
-  ![pro-step9](images/pro-step9.png). File name example: ci_agent_cid01744_rhelp-4.5.0-343.sh
+9. **[pre-provisioned]** Download the installer. On the details tab, you can also find ‘DOWNLOAD INSTALLER’ button, and download the installer for RHEL for Power.
 
-10. When you inspect the system on Commander dashboard, you can see the backup schedule for the system.
-  ![pro-step11](images/pro-step11.png)
+    ![pro-step9](images/pro-step9.png). File name example: ci_agent_cid01744_rhelp-4.5.0-343.sh
+
+10. When you inspect the system on Commander dashboard, you can see the backup schedule for the system
+
+    ![pro-step11](images/pro-step11.png)
 
 
 **Set up Cobalt Iron Compass agent on PowerVS instance**
 
-1. Copy the file to the PowerVS Linux instance.
-  ```
-  PRIVATE_KEY_FILE=/path-to-your-private-key-file
-  PVS_SERVER_IP=powervs_instance_management_ip
-  scp -i $PRIVATE_KEY_FILE -J root@pvs_compass_jumpserver <installer-file> root@$PVS_SERVER_IP:/remote-path-to/<installer-file>
-  ```
-  For example,
-  ```
-  scp -i $PRIVATE_KEY_FILE -J root@pvs_compass_jumpserver ~/Downloads/ci_agent_cid01691_rhelp-4.5.0-343.sh root@$PVS_SERVER_IP:/root/ci_agent_cid01691_rhelp-4.5.0-343.sh
-  ```
+1. **[pre-provisioned]** Copy the file to the PowerVS Linux instance.
 
-2. Make the file executable and run the installer to install the agent
+      ```
+      PRIVATE_KEY_FILE=/path-to-your-private-key-file
+      PVS_SERVER_IP=powervs_instance_management_ip
+      scp -i $PRIVATE_KEY_FILE -J root@pvs_compass_jumpserver <installer-file> root@$PVS_SERVER_IP:/remote-path-to/<installer-file>
+      ```
 
-  ```
-  chmod u+x ci_agent_cid01691_rhelp-4.5.0-343.sh
-  ```
+      For example,
 
-  Perform agent install:
+      ```
+      scp -i $PRIVATE_KEY_FILE -J root@pvs_compass_jumpserver ~/Downloads/ci_agent_cid01691_rhelp-4.5.0-343.sh root@$PVS_SERVER_IP:/root/ci_agent_cid01691_rhelp-4.5.0-343.sh
+      ```
 
-  ```
-    ./ci_agent_cid01691_rhelp-4.5.0-343.sh  install
-  ```
+2. **[pre-provisioned]** Make the file executable and run the installer to install the agent
 
-  ![pro-step10](images/pro-step10.png)
+    ```
+      chmod u+x ci_agent_cid01691_rhelp-4.5.0-343.sh
+      ./ci_agent_cid01691_rhelp-4.5.0-343.sh  install
+    ```
+
+    ![pro-step10](images/pro-step10.png)
 
 
 3. You can either wait for the scheduled backup to happen, or you can use IBM Storage Protect BACLIENT interactive command line to do backup. The command is dsmc. You can find more information in chapter 11 in [this IBM documentation](https://www.ibm.com/docs/en/SSEQVQ_8.1.19/pdf/b_ba_guide_unx_lnx.pdf)
 
 4. Query the backup schedule
 
-  ```
-    dsmc q sched
-  ```
+    ```
+      dsmc q sched
+    ```
 
-  ![pro-step12](images/pro-step12.png)
+    ![pro-step12](images/pro-step12.png)
 
 13. Do incremental back of my directory
 
-  ![pro-step13](images/pro-step13.png)
+    ![pro-step13](images/pro-step13.png)
 
 
 **Backup validation**
@@ -290,36 +414,56 @@ As highlighted in the following figure, the backup images can be used to restore
 ![restore-step1](images/restore-step1.png)
 
 
-1. In this demo, you can use the PowerVS DA to provision a new environment or manually create a PowerVS instance as the restore environment.
+1. **[pre-provisioned]** In this demo, you can use the PowerVS DA to provision a new environment or manually create a PowerVS instance as the restore environment.
 
-  If you provision a new environment, make sure to add the backup VPC to the transit gateway to make sure that it has connectivity to the Compass vaults. Click on the Hamburg menu on the upper left, and find Transit Gateway. Click on the transit gateway of the restore environment, and add compass VPC if it is not there.
+    If you provision a new environment, make sure to add the backup VPC to the transit gateway to make sure that it has connectivity to the Compass vaults. Click on the Hamburg menu on the upper left, and find Transit Gateway. Click on the transit gateway of the restore environment, and add compass VPC if it is not there.
 
-  ![restore-step2](images/restore-step2.png)
+    ![restore-step2](images/restore-step2.png)
 
-  ![restore-step3](images/restore-step3.png)
+    ![restore-step3](images/restore-step3.png)
 
-2. If your new system has different hostname from before, you need to go to the Commander dashboard and register the new system.
+2. **[pre-provisioned]** If your new system has different hostname from before, you need to go to the Commander dashboard and register the new system.
 
-  ![restore-step3](images/restore-step3b.png)
+    ![restore-step3](images/restore-step3b.png)
 
-  If your new system has the same hostname as before, you can go to the Commander dashboard, and make sure to enable the client installation.
-  ![restore-step4](images/restore-step4.png)
+    If your new system has the same hostname as before, you can go to the Commander dashboard, and make sure to enable the client installation.
+    ![restore-step4](images/restore-step4.png)
 
-3. Download the installer, and install the agent on PowerVS instance.
-  ```
-  Run the installer on the server.
-  ./ci_agent_cid01744_rhelp-4.5.0-343.sh install
-  ```
+3. **[pre-provisioned]**Download the installer, and install the agent on PowerVS instance.
 
-4. The Compass backup backs up critical user data. You still need to install the necessary softwares needed on the restore PowerVS instance, and then use Compass to retore user data. In this demo, I run the following command to install and start the MySQL server.
-  ```
-  dnf install mysql-server
-  systemctl start mysqld.service
-  ```
+    ```
+    Run the installer on the server.
+    ./ci_agent_cid01744_rhelp-4.5.0-343.sh install
+    ```
 
-5. Now let’s restore the data in my user directory /root/yytest. If the hostname of the recover server is different from before, you need to tell it to pick up the backup data from the previous system.
+4. **[pre-provisioned]** The Compass backup backs up critical user data. You still need to install the necessary softwares needed on the restore PowerVS instance, and then use Compass to retore user data. In this demo, I run the following command to install and start the MySQL server.
 
-  * You can either update the configuration file for the Storage Protect. you can add to the end of this file `/opt/tivoli/tsm/client/ba/bin/dsm.sys`.
+    ```
+    dnf install mysql-server
+    systemctl start mysqld.service
+    ```
+5. **[pre-provisioned]** The restore system will pick up the backup for the original system, we need to establish proxy relationship. For the restore system, we need to add the original system as the related client.
+
+    * **[pre-provisioned]** Go to Compass Commander, under SYSTEMS, find the system for the **restore** system, and click on its client name.
+
+      ![restore-step4](images/restore-proxy-client-system.png)
+
+    * **[pre-provisioned]** Click on the pencil button to edit.
+
+      ![restore-step4](images/restore-proxy-related-client-edit.png)
+
+    * **[pre-provisioned]** Click on the show all button.
+
+      ![restore-step4](images/restore-proxy-client-show-all.png)
+
+
+    * **[pre-provisioned]** Click on the **original** system to backup from, and click the green ok button.
+
+      ![restore-step4](images/restore-proxy-client-add.png)
+
+6. Now let’s restore the data in my user directory /root/yytest. If the hostname of the recover server is different from before, you need to tell it to pick up the backup data from the previous system.
+
+  * **[pre-provisioned]** You can either update the configuration file for the Storage Protect. you can add to the end of this file `/opt/tivoli/tsm/client/ba/bin/dsm.sys`.
     ```
     ASNODENAME           <old-client-id>
     ```
@@ -353,8 +497,11 @@ As highlighted in the following figure, the backup images can be used to restore
     restore /root/yytest/*
     ```
 
-Now I got the files I had before back:
-![restore-step7](images/restore-step7.png)
+7. Now I got the files I had before back. I can restore MySQL database with the file. And you can see below that I got my tables back.
+    ![restore-step7](images/restore-step7b.png)
+
+    ![restore-step7](images/restore-step7b.png)
+
 
 ### Demo summary
 
@@ -388,181 +535,7 @@ Prerequisites to Secure backup from on-premises to IBM cloud:
 Here is the reference architecture for Figure: Secure BaaS with Compass for on-premises to IBM Cloud.
 ![reference-aarchitecture](images/ref-arch.png)
 
-1. Create project:
-To use the DA, you can either use trusted profile or API key. To create Trusted Profile, login to IBM Cloud and create a project first.
-![doit-step1](images/doit-step1.png)
-
-Note the CRN of the project from the Manage tab:
-![doit-notecrn](images/note-crn.png)
-
-2. Create Trusted profile
-To create a trusted profile, click on Manage-> Access (IAM) -> Trusted profiles, and click on the Create button.
-![doit-step2](images/doit-step2.png)
-
-Fill in profile name, and choose IBM Cloud services:
-![doit-step2.1](images/doit-step2.1.png)
-
-Once the Trusted profile is created, grant access on the Access tab. Add the access group with the right permission.
-![doit-step2.2](images/doit-step2.2.png)
-
-Click on Details on the upper right, and note down the Profile ID.
-![doit-step2.3](images/doit-step2.3.png)
-
-3. Run PowerVS QuickStart DA
-Search for ‘Power Virtual Server with VPC landing zone’ in the Catalog.
-![doit-step3](images/doit-step3.png)
-
-Use PowerVS Quickstart deployable architecture (DA) to create a new architecture. You can set up PowerVS instance with AIX, IBM i, Linux, or SAP. In this demo, we will set up a new architecture with RHEL 9.2 on PowerVS instance. [Detailed instructions](https://cloud.ibm.com/docs/powervs-vpc?topic=powervs-vpc-deploy) can be found in IBM Cloud docs.
-
-![doit-step3.1](images/doit-step3.1.png)
-
-4. Add to an existing project.
-
-![doit-step3.2](images/doit-step3.2.png)
-
-5. Let’s create a Linux virtual server with RHEL 9.2 image. We can choose custom image for ‘tshirt_size’ and choose ‘Linux -RHEL9-SP2’ for ‘custom_profile_instance_boot_image’ under optional parameters. For ‘custom_profile’ field, here is the sample input for a small virtual server, you can adjust the input based on your requirements.
-```
-{
-  "sap_profile_id": null,
-  "cores": "1",
-  "memory": "2",
-  "server_type": "s922",
-  "proc_type": "shared",
-  "storage": {
-    "size": "",
-    "tier": ""
-  }
-}
-```
-![doit-step3.3](images/doit-step3.3.png)
-
-6. Save and validate the configuration. Approve and deploy. The environment will be deployed automatically.
-![doit-step3.4](images/doit-step3.4.png)
-
-7. As you can see from the deployable architecture diagram, it creates Edge VPC and PowerVS workspace. In Edge VPC, it creates Bastion host (jump server) in management security group, and proxy server in network service security group. It also creates a PowerVS instance in the PowerVS workspace with RHEL 9.2. Other necessary components to connect PowerVS workspace with IBM Cloud resources and secure the environment are also created, for example, Transit Gateway, VPN, VPE, etc.
-
-![doit-step3.5](images/doit-step3.5.png)
-
-**PowerVS Quickstart post setup**
-
-1. Once the environment is created, go to the Outputs tab of the configuration, and you can find IPs needed to make the connection to the environment.
-![post-setup1](images/post-setup1.png)
-
-2. Note down the following information:
-* access_host_or_ip – The floating IP of the jump server that you can access remotely.
-* powervs_instance_management_ip – The private IP of the PowerVS instance that you can access from jump server.
-* proxy_host_or_ip_port – Proxy server.
-
-To access the jump server, I added the following in ~/.ssh/config on my local Mac.
-```
-Host pvs_compass_jumpserver
-    HostName access_host_or_ip
-    user root
-    IdentityFile ~/path_to_my_private_key
-```
-
-![post-setup2](images/post-setup2.png)
-
-3. The following command should allow you to ssh to jump server from your local machine.
-```
-ssh pvs_compass_jumpserver
-```
-
-![post-setup3](images/post-setup3.png)
-
-4. And the following ssh with ‘-J’ option should allow you ssh to the PowerVS instance via the jump server from your local machine. Refer to [ssh manual page](https://man.openbsd.org/ssh#J) for more details.
-```
-PVS_SERVER_IP= powervs_instance_management_ip
-ssh -i PRIVATE_KEY_FILE -J root@pvs_compass_jumpserver root@$PVS_SERVER_IP
-```
-
- ![post-setup4](images/post-setup4.png)
-
-5. Login to the PowerVS instance, and follow the [Quickstart next steps](https://cloud.ibm.com/docs/powervs-vpc?topic=powervs-vpc-solution-quickstart-next-steps) to allow the PowerVS instance to access internet and mount nfs drive.
-
-- Configure the proxy to reach the internet. You can add the proxy settings in ~/.bashrc. As mentioned in the documentation, find the <proxy_host_or_ip_port> value in the output section of the deployment, and add the following entries at the end of /.bashrc file.
-```
-export http_proxy=http://<proxy_host_or_ip_port>:3128
-export https_proxy=http://<proxy_host_or_ip_port>:3128
-export HTTP_PROXY=http://<proxy_host_or_ip_port>:3128
-export HTTPS_PROXY=http://<proxy_host_or_ip_port>:3128
-export no_proxy=161.0.0.0/0,10.0.0.0/8
-```
-![post-setup5](images/post-setup5.png)
-
-You can run ‘souce .bashrc’ to load the new settings, and now the PowerVS instance should have internet access. You can try to connect to external site.
-curl google.com
-![post-setup6](images/post-setup6.png)
-
-6. Mount file storage from VPC on PowerVS instance. For Linux, run the following commands.
-```
-mkdir /nfs
-mount <nfs_host_or_ip_path> /nfs
-```
-![post-setup7](images/post-setup7.png)
-
-7. Config DNS on PowerVS instance
-Add the dns_host_or_ip_path value at the top in the /etc/resolv.conf file
-```
-nameserver dns_host_or_ip
-```
-
-![post-setup8](images/post-setup8.png)
-
-**Deploy workloads on PowerVS instance**
-
-1. Now we have PowerVS environment set up, we can deploy some contents on the PowerVS instance.
-
-For example, create a sample test file:
-
-* Create a sample test file
-
-```
-echo "IBM Power Virtual Server is a family of configurable, multi-tenant, virtual IBM Power servers with access to IBM Cloud services." > mytest.txt
-```
-
-Or optionally set up some sample workloads, for example, deploy MySQL server. You can install MySQL on RHEL 9.x by following instructions on this [Red Hat documentation page.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/configuring_and_using_database_servers/ssembly_using-mysql_configuring-and-using-database-servers#installing-mysql_assembly_using-mysql)
-
-![put-content1](images/put-content1.png)
-
-2. You can also set up a sample database by following instruction on [MySQL documentation page](https://dev.mysql.com/doc/employee/en/employees-installation.html).
-
-   - Download the zip file for the test_db on local machine
-
-   - Securely copy the file to the PowerVS instance
-
-```
- scp -i $MY_PRIVATE_KEY -J root@pvs_compass_jumpserver ~/Downloads/test_db-master.zip root@$PVS_SERVER_IP:/root/test_db-master.zip
-```
-   - Login to PowerVS instance and install unzip.
-
-```
- dnf install unzip
-```
-  ![put-content2](images/put-content2.png)
-
-3. Install the sample DB
-```
-  unzip test_db-master.zip
-  cd test_db-master
-  mysql -t < employees.sql
-```
-    - Validate the database by following instructions here.
-```
-  time mysql -t < test_employees_sha.sql
-```
-
-  ![put-content3](images/put-content3.png)
-
-4. You can also run a few SQL statements to query the database.
-
-![put-content4](images/put-content4.png)
-
- 5. For some databases, for example, Oracle, Compass integrates with the database via RMAN and you need to install another agent on the virtual server. For MySQL, user could backup the database into a file locally using `mysqldump -p <database_name > <backup_file.sql>`.
-
- ![put-content4](images/put-content4.png)
-
- Now we have the PowerVS instance and some sample data ready, we can start the backup.
+For backup and restore, please refer to the steps in [Demo Steps](https://pages.github.ibm.com/IBM-Cloud-Satellite-and-PaaS-Community/rhoai-demo-oict/#demo-steps).
 
 
 
