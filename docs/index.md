@@ -396,7 +396,7 @@ Refer to instructions [**here**](https://help.cobaltiron.com/wp-content/uploads/
 
     ![pro-step12](images/pro-step12.png)
 
-5. Do incremental back of my directory
+5. Do incremental backup of my directory
 
     ![pro-step13](images/pro-step13.png)
 
@@ -432,7 +432,7 @@ As highlighted in the following figure, the backup images can be used to restore
     If your new system has the same hostname as before, you can go to the Commander dashboard, and make sure to enable the client installation.
     ![restore-step4](images/restore-step4.png)
 
-3. **[pre-provisioned]**Download the installer, and install the agent on PowerVS instance.
+3. **[pre-provisioned]** Download the installer, and install the agent on PowerVS instance.
 
     ```
     Run the installer on the server.
@@ -466,45 +466,43 @@ As highlighted in the following figure, the backup images can be used to restore
       ![restore-step4](images/restore-proxy-client-add.png)
 
 
-6. Now let’s restore the data in my user directory /root/yytest. If the hostname of the recover server is different from before, you need to tell it to pick up the backup data from the previous system.
+6. Now let’s restore the data in my user directory. If the hostname of the recover server is different from before, you need to tell it to pick up the backup data from the previous system.
 
-  * **[pre-provisioned]** You can either update the configuration file for the Storage Protect. you can add to the end of this file `/opt/tivoli/tsm/client/ba/bin/dsm.sys`.
-    ```
-    ASNODENAME           <old-client-id>
-    ```
+    * **[pre-provisioned]** You can either update the configuration file for the Storage Protect. you can add to the end of this file `/opt/tivoli/tsm/client/ba/bin/dsm.sys`.
+      ```
+      ASNODENAME           <old-client-id>
+      ```
 
-    For example,
+      For example,
 
-    ```
-      ASNODENAME           cid01744-pi-qs-fil-00
-    ```
+      ```
+        ASNODENAME           cid01744-pi-qs-fil-00
+      ```
 
-  * Or you can run dsmc command with parameter to run as a different node for the current session, for example,
-    ```
-    dsmc -asnode=CID01744-pi-qs-FIL-00
-    ```
+    * Or you can run dsmc command with parameter to run as a different node for the current session, for example,
+      ```
+      dsmc -asnode=CID01744-pi-qs-FIL-00
+      ```
 
-  * You can check the timestamp of the backup before a given date and time inside dsmc shell
-    ```
-    q ba -pitt=17:00:00 -pitd=03/13/25 "/root/yytest/*"
-    ```
+    * You can check the timestamp of the backup before a given date and time inside dsmc shell
+      ```
+      q ba -pitt=17:00:00 -pitd=03/13/25 "/root/yytest/*"
+      ```
 
-    ![restore-step5](images/restore-step5.png)
+      ![restore-step5](images/restore-step5.png)
 
-  * You can pick which file you would like to restore in dsmc shell:
-    ```
-    restore /root/yytest/* -pick
-    ```
-    ![restore-step6](images/restore-step6.png)
+    * You can pick which file you would like to restore in dsmc shell:
+      ```
+      restore /root/yytest/* -pick
+      ```
+      ![restore-step6](images/restore-step6.png)
 
-  * You can restore the whole directory inside dsmc shell
-    ```
-    restore /root/yytest/*
-    ```
+    * You can also choose to restore the whole directory
+      ```
+      restore /root/yytest/*
+      ```
 
 7. Now I got the files I had before back. I can restore MySQL database with the file. And you can see below that I got my tables back.
-    ![restore-step7](images/restore-step7b.png)
-
     ![restore-step7](images/restore-step7b.png)
 
 
@@ -540,7 +538,7 @@ Prerequisites to Secure backup from on-premises to IBM cloud:
 Here is the reference architecture for Figure: Secure BaaS with Compass for on-premises to IBM Cloud.
 ![reference-aarchitecture](images/ref-arch.png)
 
-For backup and restore, please refer to the steps in [Demo Steps](https://pages.github.ibm.com/IBM-Cloud-Satellite-and-PaaS-Community/rhoai-demo-oict/#demo-steps).
+For backup and restore, please refer to the steps in [Demo Steps](https://pages.github.ibm.com/IBM-Cloud-Satellite-and-PaaS-Community/cobaltiron-demo-oict/#demo-steps).
 
 
 
